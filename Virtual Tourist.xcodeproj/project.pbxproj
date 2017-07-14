@@ -14,6 +14,7 @@
 		D523B7D01F16CD4A00209E85 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D523B7CE1F16CD4A00209E85 /* LaunchScreen.storyboard */; };
 		D523B7DB1F16CD4A00209E85 /* Virtual_TouristTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D523B7DA1F16CD4A00209E85 /* Virtual_TouristTests.swift */; };
 		D523B7E61F16CD4A00209E85 /* Virtual_TouristUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D523B7E51F16CD4A00209E85 /* Virtual_TouristUITests.swift */; };
+		D523B7F41F189DC500209E85 /* PinAnnoation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D523B7F31F189DC500209E85 /* PinAnnoation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +48,7 @@
 		D523B7E11F16CD4A00209E85 /* Virtual TouristUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Virtual TouristUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D523B7E51F16CD4A00209E85 /* Virtual_TouristUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Virtual_TouristUITests.swift; sourceTree = "<group>"; };
 		D523B7E71F16CD4A00209E85 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D523B7F31F189DC500209E85 /* PinAnnoation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinAnnoation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +105,7 @@
 				D523B7CC1F16CD4A00209E85 /* Assets.xcassets */,
 				D523B7CE1F16CD4A00209E85 /* LaunchScreen.storyboard */,
 				D523B7D11F16CD4A00209E85 /* Info.plist */,
+				D523B7F31F189DC500209E85 /* PinAnnoation.swift */,
 			);
 			path = "Virtual Tourist";
 			sourceTree = "<group>";
@@ -193,6 +196,7 @@
 				TargetAttributes = {
 					D523B7C11F16CD4A00209E85 = {
 						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = T7PF689UHV;
 						ProvisioningStyle = Automatic;
 					};
 					D523B7D51F16CD4A00209E85 = {
@@ -261,6 +265,7 @@
 			files = (
 				D523B7C81F16CD4A00209E85 /* ViewController.swift in Sources */,
 				D523B7C61F16CD4A00209E85 /* AppDelegate.swift in Sources */,
+				D523B7F41F189DC500209E85 /* PinAnnoation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -412,6 +417,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = T7PF689UHV;
 				INFOPLIST_FILE = "Virtual Tourist/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.appfish.Virtual-Tourist";
@@ -424,6 +430,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = T7PF689UHV;
 				INFOPLIST_FILE = "Virtual Tourist/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.appfish.Virtual-Tourist";
