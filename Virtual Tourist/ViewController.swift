@@ -14,16 +14,11 @@ class ViewController: UIViewController{
     @IBOutlet weak var mapView: MKMapView!
     var locationManager : CLLocationManager!
     var gesture : UILongPressGestureRecognizer!
-    override func viewWillLayoutSubviews() {
-        
-    }
+    
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        mapView.showsUserLocation = true
-        gesture = UILongPressGestureRecognizer(target: self, action: #selector(gestured))
-        mapView.addGestureRecognizer(gesture)
         locationManager = CLLocationManager()
         locationManager.delegate = self
         if CLLocationManager.authorizationStatus() == .notDetermined{
@@ -32,27 +27,36 @@ class ViewController: UIViewController{
             
         }
         locationManager.requestLocation()
+        mapView.showsUserLocation = true
+        gesture = UILongPressGestureRecognizer(target: self, action: #selector(gestured))
+        mapView.addGestureRecognizer(gesture)
+        
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        mapView.delegate = self
     }
     
-    func gestured(){
+    func gestured(sender : UILongPressGestureRecognizer){
         
-        let point = gesture.location(in: mapView)
-        let coordinate = mapView.convert(point, toCoordinateFrom: mapView)
-        let annoatation = MKPointAnnotation()
-        annoatation.coordinate = coordinate
-        mapView.addAnnotation(annoatation)
+        if sender.state == .ended{
+            let point = gesture.location(in: mapView)
+            let coordinate = mapView.convert(point, toCoordinateFrom: mapView)
+            let annoatation = MKPointAnnotation()
+            annoatation.coordinate = coordinate
+            mapView.addAnnotation(annoatation)
+            print(mapView.annotations.count)
+        }
+        
     }
+    
+    
 
    
 }
 
 extension ViewController : CLLocationManagerDelegate{
     
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        
-        
-        
-    }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
@@ -70,22 +74,53 @@ extension ViewController : CLLocationManagerDelegate{
 extension ViewController : MKMapViewDelegate{
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        
-        let pinAnnotionView : MKPinAnnotationView!
-        
-        if let newPin = mapView.dequeueReusableAnnotationView(withIdentifier: "pin") as? MKPinAnnotationView{
-            
-            pinAnnotionView = newPin
-            
+        if annotation is MKUserLocation{
+            return nil
         }
         else{
-            
-            pinAnnotionView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "pin")
-            
+            let pinAnnotionView : MKPinAnnotationView!
+            if let dequeuedPinView = mapView.dequeueReusableAnnotationView(withIdentifier: "pin") as? MKPinAnnotationView{
+                
+                pinAnnotionView = dequeuedPinView
+                
+            }
+            else{
+                
+                pinAnnotionView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "pin")
+                
+            }
+            return pinAnnotionView
         }
-        pinAnnotionView.animatesDrop = true
-        return pinAnnotionView
         
+        
+    }
+    
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        
+        if let coordinate = view.annotation?.coordinate{
+            
+            print("latitude is \(coordinate.latitude) and longitude is \(coordinate.longitude)")
+            
+            let camera = MKMapCamera(lookingAtCenter: coordinate, fromEyeCoordinate: coordinate, eyeAltitude: 50)
+            camera.pitch = 0
+            let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+            let region = MKCoordinateRegion(center: coordinate, span: span)
+            let snapoptions = MKMapSnapshotOptions()
+            snapoptions.camera = camera
+            snapoptions.region = region
+            let snapshotter = MKMapSnapshotter(options: snapoptions)
+            snapshotter.start(completionHandler: {(snapshot, error) in
+                if error == nil{
+                    let detail = self.storyboard?.instantiateViewController(withIdentifier: "detail") as! DetailViewController
+                    detail.image = snapshot?.image
+                    detail.coordinate = coordinate  
+                    self.navigationController?.pushViewController(detail, animated: true)
+                    
+                    
+                }
+                
+            })
+        }
     }
     
     
