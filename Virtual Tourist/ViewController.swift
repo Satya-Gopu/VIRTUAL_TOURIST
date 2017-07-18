@@ -10,11 +10,11 @@ import UIKit
 import MapKit
 
 class ViewController: UIViewController{
-    
+    @IBOutlet weak var editLabel: UILabel!
     @IBOutlet weak var mapView: MKMapView!
     var locationManager : CLLocationManager!
     var gesture : UILongPressGestureRecognizer!
-    
+    var edit = false
     
 
     override func viewDidLoad() {
@@ -47,12 +47,25 @@ class ViewController: UIViewController{
             mapView.addAnnotation(annoatation)
             print(mapView.annotations.count)
         }
+    }
+    @IBAction func editFunction(_ sender: Any) {
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(doneFunction))
+        mapView.frame.origin.y = mapView.frame.origin.y - editLabel.frame.height
+        editLabel.frame.origin.y = editLabel.frame.origin.y - editLabel.frame.height
+        edit = true
+    }
+    
+    func doneFunction(){
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(editFunction(_:)))
+        mapView.frame.origin.y = mapView.frame.origin.y + editLabel.frame.height
+        editLabel.frame.origin.y = editLabel.frame.origin.y + editLabel.frame.height
+        edit = false
         
     }
     
     
-
-   
 }
 
 extension ViewController : CLLocationManagerDelegate{
@@ -91,36 +104,40 @@ extension ViewController : MKMapViewDelegate{
             }
             return pinAnnotionView
         }
-        
-        
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-        
-        if let coordinate = view.annotation?.coordinate{
-            
-            print("latitude is \(coordinate.latitude) and longitude is \(coordinate.longitude)")
-            
-            let camera = MKMapCamera(lookingAtCenter: coordinate, fromEyeCoordinate: coordinate, eyeAltitude: 50)
-            camera.pitch = 0
-            let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-            let region = MKCoordinateRegion(center: coordinate, span: span)
-            let snapoptions = MKMapSnapshotOptions()
-            snapoptions.camera = camera
-            snapoptions.region = region
-            let snapshotter = MKMapSnapshotter(options: snapoptions)
-            snapshotter.start(completionHandler: {(snapshot, error) in
-                if error == nil{
-                    let detail = self.storyboard?.instantiateViewController(withIdentifier: "detail") as! DetailViewController
-                    detail.image = snapshot?.image
-                    detail.coordinate = coordinate  
-                    self.navigationController?.pushViewController(detail, animated: true)
-                    
-                    
-                }
-                
-            })
+        if edit{
+            mapView.removeAnnotation(view.annotation!)
         }
+        else{
+            mapView.deselectAnnotation(view.annotation, animated: true)
+            if let coordinate = view.annotation?.coordinate{
+                
+                print("latitude is \(coordinate.latitude) and longitude is \(coordinate.longitude)")
+                
+                let camera = MKMapCamera(lookingAtCenter: coordinate, fromEyeCoordinate: coordinate, eyeAltitude: 50)
+                camera.pitch = 0
+                let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+                let region = MKCoordinateRegion(center: coordinate, span: span)
+                let snapoptions = MKMapSnapshotOptions()
+                snapoptions.camera = camera
+                snapoptions.region = region
+                let snapshotter = MKMapSnapshotter(options: snapoptions)
+                snapshotter.start(completionHandler: {(snapshot, error) in
+                    if error == nil{
+                        let detail = self.storyboard?.instantiateViewController(withIdentifier: "detail") as! DetailViewController
+                        detail.image = snapshot?.image
+                        detail.coordinate = coordinate
+                        self.navigationController?.pushViewController(detail, animated: true)
+                        
+                        
+                    }
+                    
+                })
+            } 
+        }
+        
     }
     
     
