@@ -82,6 +82,16 @@
                                     <constraint firstAttribute="height" constant="166" id="uxb-gu-Wfo"/>
                                 </constraints>
                             </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="This pin has no images." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="otR-R8-8Na">
+                                <rect key="frame" x="0.0" y="315" width="375" height="37"/>
+                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="37" id="xR7-N0-DjX"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Qv9-mX-SaE">
                                 <rect key="frame" x="0.0" y="230" width="375" height="437"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
@@ -99,10 +109,10 @@
                                             <rect key="frame" x="0.0" y="0.0" width="112" height="112"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="usO-5W-knh">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="usO-5W-knh">
                                                     <rect key="frame" x="8" y="8" width="96" height="96"/>
                                                 </imageView>
-                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="r8W-w2-UQS">
+                                                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="r8W-w2-UQS">
                                                     <rect key="frame" x="38" y="38" width="37" height="37"/>
                                                     <color key="color" red="0.11002434408448017" green="0.20555489227529566" blue="0.54310755076142136" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 </activityIndicatorView>
@@ -128,27 +138,44 @@
                                     <outlet property="delegate" destination="2tE-uQ-P6H" id="HU0-HO-pPl"/>
                                 </connections>
                             </collectionView>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fvX-0f-zZr">
+                                <rect key="frame" x="0.0" y="623" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <items>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="RSf-IJ-Jqc"/>
+                                    <barButtonItem title="New Collection" id="ddw-co-CY1">
+                                        <connections>
+                                            <action selector="newCollection:" destination="2tE-uQ-P6H" id="yiI-Zz-q0B"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="Vub-YK-9Vz"/>
+                                </items>
+                            </toolbar>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="Qv9-mX-SaE" firstAttribute="top" secondItem="eOd-2S-wrH" secondAttribute="bottom" id="0QD-i9-oJg"/>
                             <constraint firstItem="eOd-2S-wrH" firstAttribute="leading" secondItem="JA1-nb-E9S" secondAttribute="leading" id="0Tm-eo-NfR"/>
                             <constraint firstItem="Qv9-mX-SaE" firstAttribute="leading" secondItem="JA1-nb-E9S" secondAttribute="leading" id="8qY-TY-nC9"/>
+                            <constraint firstItem="otR-R8-8Na" firstAttribute="centerY" secondItem="JA1-nb-E9S" secondAttribute="centerY" id="Nbc-bR-UOq"/>
                             <constraint firstItem="m9i-4n-acc" firstAttribute="top" secondItem="Qv9-mX-SaE" secondAttribute="bottom" id="SHm-cb-UUy"/>
+                            <constraint firstItem="otR-R8-8Na" firstAttribute="leading" secondItem="JA1-nb-E9S" secondAttribute="leading" id="UAm-aT-C2v"/>
                             <constraint firstAttribute="trailing" secondItem="eOd-2S-wrH" secondAttribute="trailing" id="adR-Pz-w5q"/>
                             <constraint firstAttribute="trailing" secondItem="Qv9-mX-SaE" secondAttribute="trailing" id="c8H-au-EKT"/>
+                            <constraint firstAttribute="trailing" secondItem="otR-R8-8Na" secondAttribute="trailing" id="nD1-m0-42e"/>
                             <constraint firstItem="eOd-2S-wrH" firstAttribute="top" secondItem="Uxn-vj-1Et" secondAttribute="bottom" id="oWK-Ro-E3y"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="PhotoView" id="nyi-2D-sq1"/>
                     <connections>
                         <outlet property="collectionView" destination="Qv9-mX-SaE" id="XXz-1e-AGq"/>
+                        <outlet property="errorLabel" destination="otR-R8-8Na" id="A3E-41-11s"/>
                         <outlet property="imageView" destination="eOd-2S-wrH" id="HNy-OT-e05"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="o9z-zt-apI" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2253.5999999999999" y="135.38230884557723"/>
+            <point key="canvasLocation" x="2273" y="136"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="hgn-gI-Yz4">

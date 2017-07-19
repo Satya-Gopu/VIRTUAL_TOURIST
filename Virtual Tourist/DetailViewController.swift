@@ -15,27 +15,30 @@ class DetailViewController: UIViewController {
     var image : UIImage!
     @IBOutlet weak var collectionView: UICollectionView!
     var coordinate : CLLocationCoordinate2D!
-    var imageURLS : [String] = []
+    var images : [ImageData] = []
+    var page_no = 1
     var errorOccurred : Bool = false
+    @IBOutlet weak var errorLabel: UILabel!
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
         imageView.image = image
         startFlickerServices()
-        
+        print("In did load")
     }
+    
     
     func startFlickerServices(){
         
-        let urlString = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=82174b20665805c27aef79b4a78324e3&lat=\(coordinate.latitude)&lon=\(coordinate.longitude)&extras=url_m&per_page=20&format=json&nojsoncallback=1"
+        let urlString = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=82174b20665805c27aef79b4a78324e3&lat=\(coordinate.latitude)&lon=\(coordinate.longitude)&extras=url_m&per_page=21&page=\(page_no)&format=json&nojsoncallback=1"
         print(urlString)
         let url = URL(string: urlString)
         
         let task = URLSession.shared.dataTask(with: url!, completionHandler: {(data, response, error) in
             
             if error != nil{
-                self.imageURLS.removeAll()
+                self.images.removeAll()
                 print("error")
             }
             else{
@@ -49,28 +52,46 @@ class DetailViewController: UIViewController {
                             self.presentAlert(message: "Parse Error")
                             return
                         }
-                        
-                        guard let photoDict = jsonData["photo"] as? [Any] else{
+                        guard let photosDict = jsonData["photos"] as? [String : Any] else{
+                            return
+                        }
+                        guard let photoDict = photosDict["photo"] as? [[String : Any]] else{
                             return
                         }
                         for item in photoDict{
                             
-                            guard let item = item as? [String : Any] else{
-                                return
-                            }
-                            
                             if let url = item["url_m"] as? String{
-                                self.imageURLS.append(url)
+                                let url = URL(string: url)
+                                let newItem = ImageData(url: url!, data: nil)
+                                self.images.append(newItem)
                             }
                             else{
                                 continue
                             }
                             
                         }
-                        print(self.imageURLS)
+                        DispatchQueue.main.async {
+                            if self.images.isEmpty{
+                                self.collectionView.isHidden = true
+                                self.errorLabel.isHidden = false
+                            }
+                            else{
+                                self.collectionView.isHidden = false
+                                self.errorLabel.isHidden = true
+                                self.collectionView.reloadData()
+                                for (index, item) in self.images.enumerated(){
+                                    
+                                    let data = try! Data(contentsOf: item.url)
+                                    self.images[index].data = data
+                                    self.collectionView.reloadItems(at: [IndexPath(item: index, section: 0)])
+                                    
+                                    
+                                }
+                            }
+                            
+                        }
                         
-                        
-                    }catch{
+                     }catch{
                         return
                         
                     }
@@ -84,6 +105,15 @@ class DetailViewController: UIViewController {
         
         
     }
+    
+    @IBAction func newCollection(_ sender: Any) {
+        images.removeAll()
+        collectionView.reloadData()
+        page_no += 1
+        startFlickerServices()
+        
+    }
+    
     
     func presentAlert(message : String){
         
@@ -105,13 +135,21 @@ class DetailViewController: UIViewController {
 extension DetailViewController : UICollectionViewDelegate, UICollectionViewDataSource{
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return imageURLS.count
+        return images.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let item = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! CollectionViewCell
-        
-        item.acitivityView.startAnimating()
+        if let data = images[indexPath.item].data{
+            let image = UIImage(data: data)
+            item.cellImageView.image = image
+            item.cellImageView.isHidden = false
+            item.acitivityView.stopAnimating()
+        }
+        else{
+            item.cellImageView.isHidden = true
+            item.acitivityView.startAnimating()
+        }
         return item
     }
     
