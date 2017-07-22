@@ -7,6 +7,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -76,12 +77,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="eOd-2S-wrH">
-                                <rect key="frame" x="0.0" y="64" width="375" height="166"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="166" id="uxb-gu-Wfo"/>
-                                </constraints>
-                            </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="This pin has no images." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="otR-R8-8Na">
                                 <rect key="frame" x="0.0" y="315" width="375" height="37"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -93,8 +88,8 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Qv9-mX-SaE">
-                                <rect key="frame" x="0.0" y="230" width="375" height="437"/>
-                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <rect key="frame" x="0.0" y="264" width="375" height="403"/>
+                                <color key="backgroundColor" red="1" green="0.85186089409722221" blue="0.66666666666666663" alpha="1" colorSpace="calibratedRGB"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="H52-36-XM3">
                                     <size key="itemSize" width="112" height="112"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
@@ -109,7 +104,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="112" height="112"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="usO-5W-knh">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bike_traveler.png" translatesAutoresizingMaskIntoConstraints="NO" id="usO-5W-knh">
                                                     <rect key="frame" x="8" y="8" width="96" height="96"/>
                                                 </imageView>
                                                 <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="r8W-w2-UQS">
@@ -151,31 +146,36 @@
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="Vub-YK-9Vz"/>
                                 </items>
                             </toolbar>
+                            <mapView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="8el-K2-OYj">
+                                <rect key="frame" x="0.0" y="64" width="375" height="200"/>
+                            </mapView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="Qv9-mX-SaE" firstAttribute="top" secondItem="eOd-2S-wrH" secondAttribute="bottom" id="0QD-i9-oJg"/>
-                            <constraint firstItem="eOd-2S-wrH" firstAttribute="leading" secondItem="JA1-nb-E9S" secondAttribute="leading" id="0Tm-eo-NfR"/>
                             <constraint firstItem="Qv9-mX-SaE" firstAttribute="leading" secondItem="JA1-nb-E9S" secondAttribute="leading" id="8qY-TY-nC9"/>
+                            <constraint firstItem="Qv9-mX-SaE" firstAttribute="top" secondItem="8el-K2-OYj" secondAttribute="bottom" id="EDp-g9-aAC"/>
+                            <constraint firstItem="8el-K2-OYj" firstAttribute="leading" secondItem="JA1-nb-E9S" secondAttribute="leading" id="EuV-8s-rRq"/>
                             <constraint firstItem="otR-R8-8Na" firstAttribute="centerY" secondItem="JA1-nb-E9S" secondAttribute="centerY" id="Nbc-bR-UOq"/>
+                            <constraint firstItem="8el-K2-OYj" firstAttribute="height" secondItem="JA1-nb-E9S" secondAttribute="height" multiplier="0.3" id="Ngc-VQ-DAa"/>
                             <constraint firstItem="m9i-4n-acc" firstAttribute="top" secondItem="Qv9-mX-SaE" secondAttribute="bottom" id="SHm-cb-UUy"/>
                             <constraint firstItem="otR-R8-8Na" firstAttribute="leading" secondItem="JA1-nb-E9S" secondAttribute="leading" id="UAm-aT-C2v"/>
-                            <constraint firstAttribute="trailing" secondItem="eOd-2S-wrH" secondAttribute="trailing" id="adR-Pz-w5q"/>
+                            <constraint firstAttribute="trailing" secondItem="8el-K2-OYj" secondAttribute="trailing" id="Ym5-87-mBU"/>
                             <constraint firstAttribute="trailing" secondItem="Qv9-mX-SaE" secondAttribute="trailing" id="c8H-au-EKT"/>
+                            <constraint firstItem="8el-K2-OYj" firstAttribute="top" secondItem="Uxn-vj-1Et" secondAttribute="bottom" id="doA-9R-obG"/>
                             <constraint firstAttribute="trailing" secondItem="otR-R8-8Na" secondAttribute="trailing" id="nD1-m0-42e"/>
-                            <constraint firstItem="eOd-2S-wrH" firstAttribute="top" secondItem="Uxn-vj-1Et" secondAttribute="bottom" id="oWK-Ro-E3y"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="PhotoView" id="nyi-2D-sq1"/>
                     <connections>
                         <outlet property="collectionView" destination="Qv9-mX-SaE" id="XXz-1e-AGq"/>
                         <outlet property="errorLabel" destination="otR-R8-8Na" id="A3E-41-11s"/>
-                        <outlet property="imageView" destination="eOd-2S-wrH" id="HNy-OT-e05"/>
+                        <outlet property="mapView" destination="8el-K2-OYj" id="pXs-Ap-nRB"/>
+                        <outlet property="toolBar" destination="fvX-0f-zZr" id="0cf-ov-Bag"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="o9z-zt-apI" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2273" y="136"/>
+            <point key="canvasLocation" x="2272.8000000000002" y="135.38230884557723"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="hgn-gI-Yz4">
@@ -196,4 +196,7 @@
             <point key="canvasLocation" x="293.60000000000002" y="792.95352323838085"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="bike_traveler.png" width="600" height="450"/>
+    </resources>
 </document>

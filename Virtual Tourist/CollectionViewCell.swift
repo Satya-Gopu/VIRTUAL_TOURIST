@@ -14,6 +14,26 @@ class CollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var acitivityView: UIActivityIndicatorView!
     
+    override var isSelected: Bool{
+        willSet{
+            if newValue{
+                self.contentView.alpha = 0.2
+            }
+            else{
+                
+                self.contentView.alpha = 1
+            }
+            
+            
+            
+        }
+        
+        
+        
+        
+        
+    }
+    
     
     
 }

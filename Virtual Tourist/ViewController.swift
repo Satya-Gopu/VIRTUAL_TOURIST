@@ -115,26 +115,10 @@ extension ViewController : MKMapViewDelegate{
             if let coordinate = view.annotation?.coordinate{
                 
                 print("latitude is \(coordinate.latitude) and longitude is \(coordinate.longitude)")
+                let detail = self.storyboard?.instantiateViewController(withIdentifier: "detail") as! DetailViewController
+                detail.coordinate = coordinate
+                self.navigationController?.pushViewController(detail, animated: true)
                 
-                let camera = MKMapCamera(lookingAtCenter: coordinate, fromEyeCoordinate: coordinate, eyeAltitude: 50)
-                camera.pitch = 0
-                let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-                let region = MKCoordinateRegion(center: coordinate, span: span)
-                let snapoptions = MKMapSnapshotOptions()
-                snapoptions.camera = camera
-                snapoptions.region = region
-                let snapshotter = MKMapSnapshotter(options: snapoptions)
-                snapshotter.start(completionHandler: {(snapshot, error) in
-                    if error == nil{
-                        let detail = self.storyboard?.instantiateViewController(withIdentifier: "detail") as! DetailViewController
-                        detail.image = snapshot?.image
-                        detail.coordinate = coordinate
-                        self.navigationController?.pushViewController(detail, animated: true)
-                        
-                        
-                    }
-                    
-                })
             } 
         }
         
