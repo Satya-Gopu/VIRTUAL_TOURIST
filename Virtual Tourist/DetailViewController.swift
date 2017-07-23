@@ -16,6 +16,12 @@ class DetailViewController: UIViewController {
     var coordinate : CLLocationCoordinate2D!
     var images : [ImageData] = []
     var page_no = 1
+    lazy var urlSession :URLSession = {
+        let config = URLSessionConfiguration.default
+        let session = URLSession(configuration: config, delegate: self, delegateQueue: nil)
+        return session
+    }()
+    var downloadCount = 0
     var selectedIndexpaths = [IndexPath]()
     var errorOccurred : Bool = false
     @IBOutlet weak var errorLabel: UILabel!
@@ -39,15 +45,16 @@ class DetailViewController: UIViewController {
     
     
     func startFlickerServices(){
-        
+        (toolBar.items?[1])?.isEnabled = false
         let urlString = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=82174b20665805c27aef79b4a78324e3&lat=\(coordinate.latitude)&lon=\(coordinate.longitude)&extras=url_m&per_page=21&page=\(page_no)&format=json&nojsoncallback=1"
         let url = URL(string: urlString)
         
-        let task = URLSession.shared.dataTask(with: url!, completionHandler: {(data, response, error) in
+        let task = urlSession.dataTask(with: url!, completionHandler: {(data, response, error) in
             
             if error != nil{
                 self.images.removeAll()
                 print("error")
+                self.presentAlert(message: "Error occured! Please check your internet connection")
             }
             else{
                 if let response = response as? HTTPURLResponse, response.statusCode == 200{
@@ -84,16 +91,13 @@ class DetailViewController: UIViewController {
                                 self.errorLabel.isHidden = false
                             }
                             else{
+                                self.collectionView.reloadData()
                                 self.collectionView.isHidden = false
                                 self.errorLabel.isHidden = true
-                                self.collectionView.reloadData()
-                                for (index, item) in self.images.enumerated(){
+                                for item in self.images{
                                     
-                                    let data = try! Data(contentsOf: item.url)
-                                    self.images[index].data = data
-                                    self.collectionView.reloadItems(at: [IndexPath(item: index, section: 0)])
-                                    
-                                    
+                                    let task = self.urlSession.downloadTask(with: item.url)
+                                    task.resume()
                                 }
                             }
                             
@@ -116,6 +120,7 @@ class DetailViewController: UIViewController {
     
     @IBAction func newCollection(_ sender: Any) {
         images.removeAll()
+        downloadCount = 0
         collectionView.reloadData()
         page_no += 1
         startFlickerServices()
@@ -135,12 +140,12 @@ class DetailViewController: UIViewController {
                 $0.item > $1.item
             })
             for index in selectedIndexes{
-                print("removing item in images array at \(index.item)")
                 images.remove(at: index.item)
-                print("images array count now is \(images.count)")
             }
             collectionView.deleteItems(at: selectedIndexes)
         }
+        let barbutton = UIBarButtonItem(title: "New Collection", style: .plain, target: self, action: #selector(self.newCollection(_:)))
+        toolBar.items?[1] = barbutton
         
         
     }
@@ -222,5 +227,43 @@ extension DetailViewController : UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 5
     }
+}
+
+extension DetailViewController : URLSessionDelegate, URLSessionDownloadDelegate{
+    
+    func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
+        if error != nil{
+            
+            presentAlert(message: "Error Occured")
+        }
+    }
+    
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        
+        let data = try! Data(contentsOf: location)
+        downloadCount += 1
+        print(downloadCount)
+        for (index, item) in images.enumerated(){
+            
+            if downloadTask.originalRequest?.url == item.url{
+                
+                images[index].data = data
+                DispatchQueue.main.async {
+                    self.collectionView.reloadItems(at: [IndexPath(item: index, section: 0)])
+                    downloadTask.cancel()
+                    if self.downloadCount == self.images.count{
+                        
+                        (self.toolBar.items?[1])?.isEnabled = true
+                    }
+                }
+                break
+            }
+        }
+        
+    }
+    
+    
+    
+    
 }
 
