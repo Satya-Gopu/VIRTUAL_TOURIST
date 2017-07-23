@@ -23,17 +23,6 @@ class CollectionViewCell: UICollectionViewCell {
                 
                 self.contentView.alpha = 1
             }
-            
-            
-            
         }
-        
-        
-        
-        
-        
     }
-    
-    
-    
 }

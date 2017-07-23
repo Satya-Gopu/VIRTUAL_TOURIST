@@ -8,6 +8,7 @@
 
 import UIKit
 import MapKit
+import CoreData
 
 class ViewController: UIViewController{
     @IBOutlet weak var editLabel: UILabel!
@@ -15,12 +16,14 @@ class ViewController: UIViewController{
     var locationManager : CLLocationManager!
     var gesture : UILongPressGestureRecognizer!
     var edit = false
-    
+    lazy var pinArray = [Pin]()
+    let appDelegate = UIApplication.shared.delegate as? AppDelegate
 
     override func viewDidLoad() {
         super.viewDidLoad()
         locationManager = CLLocationManager()
         locationManager.delegate = self
+        mapView.delegate = self
         if CLLocationManager.authorizationStatus() == .notDetermined{
             
             locationManager.requestAlwaysAuthorization()
@@ -28,13 +31,25 @@ class ViewController: UIViewController{
         }
         locationManager.requestLocation()
         mapView.showsUserLocation = true
+        let context = appDelegate!.coreDataStack.managedObjectContext
+        let fetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Pin")
+        pinArray = try! context?.fetch(fetch) as! [Pin]
         gesture = UILongPressGestureRecognizer(target: self, action: #selector(gestured))
         mapView.addGestureRecognizer(gesture)
         
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        for pin in pinArray{
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = CLLocationCoordinate2D(latitude: pin.latitude, longitude: pin.longitude)
+            mapView.addAnnotation(annotation)
+            
+        }
+    }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        mapView.delegate = self
+        
     }
     
     func gestured(sender : UILongPressGestureRecognizer){
@@ -45,6 +60,11 @@ class ViewController: UIViewController{
             let annoatation = MKPointAnnotation()
             annoatation.coordinate = coordinate
             mapView.addAnnotation(annoatation)
+            let entityDescription = NSEntityDescription.entity(forEntityName: "Pin", in: appDelegate!.coreDataStack.managedObjectContext)
+            let newPin = NSManagedObject(entity: entityDescription!, insertInto: appDelegate!.coreDataStack.managedObjectContext) as! Pin
+            newPin.latitude = coordinate.latitude
+            newPin.longitude = coordinate.longitude
+            try! appDelegate?.coreDataStack.savecontext()
             print(mapView.annotations.count)
         }
     }
