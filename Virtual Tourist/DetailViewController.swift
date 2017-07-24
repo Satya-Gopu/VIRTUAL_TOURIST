@@ -143,6 +143,20 @@ class DetailViewController: UIViewController {
     @IBAction func newCollection(_ sender: Any) {
         images.removeAll()
         downloadCount = 0
+        let fetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Image")
+        let predicate = NSPredicate(format: "pin = %@", argumentArray: [pin])
+        fetch.predicate = predicate
+        do{
+            if let imageArray = try context.fetch(fetch) as? [Image], imageArray.count != 0{
+                for image in imageArray{
+                    context.delete(image)
+                }
+                try context.save()
+            }
+        }catch{
+            
+            print("New collection error")
+        }
         collectionView.reloadData()
         page_no += 1
         startFlickerServices()
@@ -165,9 +179,22 @@ class DetailViewController: UIViewController {
             selectedIndexes = selectedIndexes.sorted(by: {
                 $0.item > $1.item
             })
-            for index in selectedIndexes{
-                images.remove(at: index.item)
+            let fetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Image")
+            let predicate = NSPredicate(format: "pin = %@", argumentArray: [pin])
+            fetch.predicate = predicate
+            do{
+                if let imageArray = try context.fetch(fetch) as? [Image], imageArray.count != 0{
+                    for index in selectedIndexes{
+                        images.remove(at: index.item)
+                        context.delete(imageArray[index.item])
+                    }
+                    try context.save()
+                }
+            }catch{
+                
+                print("Delete image error")
             }
+            
             collectionView.deleteItems(at: selectedIndexes)
         }
         let barbutton = UIBarButtonItem(title: "New Collection", style: .plain, target: self, action: #selector(self.newCollection(_:)))
