@@ -127,6 +127,9 @@ extension ViewController : MKMapViewDelegate{
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        if view.annotation is MKUserLocation{
+            return
+        }
         let latitude  = Double((view.annotation?.coordinate.latitude)!)
         let longitude = Double((view.annotation?.coordinate.longitude)!)
         let fetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Pin")
