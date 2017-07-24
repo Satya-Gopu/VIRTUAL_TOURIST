@@ -10,7 +10,7 @@ import Foundation
 
 struct ImageData{
     
-    var url : URL
+    var url : URL!
     var data : Data!
     
 }

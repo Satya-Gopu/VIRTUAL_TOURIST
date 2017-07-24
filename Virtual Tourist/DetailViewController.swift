@@ -9,6 +9,7 @@
 import UIKit
 import CoreLocation
 import MapKit
+import CoreData
 
 class DetailViewController: UIViewController {
     @IBOutlet weak var mapView : MKMapView!
@@ -21,6 +22,8 @@ class DetailViewController: UIViewController {
         let session = URLSession(configuration: config, delegate: self, delegateQueue: nil)
         return session
     }()
+    var pin : Pin!
+    var context : NSManagedObjectContext!
     var downloadCount = 0
     var selectedIndexpaths = [IndexPath]()
     var errorOccurred : Bool = false
@@ -40,7 +43,27 @@ class DetailViewController: UIViewController {
         let annotation = MKPointAnnotation()
         annotation.coordinate = self.coordinate
         mapView.addAnnotation(annotation)
-        startFlickerServices()
+        let fetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Image")
+        let predicate = NSPredicate(format: "pin = %@", argumentArray: [pin])
+        fetch.predicate = predicate
+        do{
+            if let imageArray = try context.fetch(fetch) as? [Image], imageArray.count != 0{
+                for image in imageArray{
+                    
+                    let newItem = ImageData(url: nil, data: image.imageData! as Data)
+                    self.images.append(newItem)
+                }
+                collectionView.reloadData()
+            }
+            else{
+                startFlickerServices()
+            }
+        }catch{
+            
+            print("No item")
+        }
+        
+        
     }
     
     
@@ -100,7 +123,6 @@ class DetailViewController: UIViewController {
                                     task.resume()
                                 }
                             }
-                            
                         }
                         
                      }catch{
@@ -131,6 +153,10 @@ class DetailViewController: UIViewController {
     func presentAlert(message : String){
         
         let alert = UIAlertController(title: "Error Occured", message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "ok", style: .cancel, handler: { action in
+            self.navigationController?.popToRootViewController(animated: true)
+        })
+        alert.addAction(okAction)
         self.present(alert, animated: true, completion: nil)
     }
     
@@ -249,6 +275,15 @@ extension DetailViewController : URLSessionDelegate, URLSessionDownloadDelegate{
                 
                 images[index].data = data
                 DispatchQueue.main.async {
+                    let entityDescription = NSEntityDescription.entity(forEntityName: "Image", in: self.context)
+                    let newImage = Image(entity: entityDescription!, insertInto: self.context)
+                    newImage.setValue(data, forKey: "imageData")
+                    newImage.pin = self.pin
+                    do{
+                        try (UIApplication.shared.delegate as! AppDelegate).coreDataStack.savecontext()
+                    }catch{
+                        print("save error")
+                    }
                     self.collectionView.reloadItems(at: [IndexPath(item: index, section: 0)])
                     downloadTask.cancel()
                     if self.downloadCount == self.images.count{
@@ -261,9 +296,5 @@ extension DetailViewController : URLSessionDelegate, URLSessionDownloadDelegate{
         }
         
     }
-    
-    
-    
-    
 }
 

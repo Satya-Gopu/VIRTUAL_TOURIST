@@ -41,6 +41,7 @@ class ViewController: UIViewController{
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         for pin in pinArray{
+            print("pin coordinates are \(pin.latitude) and \(pin.longitude)")
             let annotation = MKPointAnnotation()
             annotation.coordinate = CLLocationCoordinate2D(latitude: pin.latitude, longitude: pin.longitude)
             mapView.addAnnotation(annotation)
@@ -61,11 +62,10 @@ class ViewController: UIViewController{
             annoatation.coordinate = coordinate
             mapView.addAnnotation(annoatation)
             let entityDescription = NSEntityDescription.entity(forEntityName: "Pin", in: appDelegate!.coreDataStack.managedObjectContext)
-            let newPin = NSManagedObject(entity: entityDescription!, insertInto: appDelegate!.coreDataStack.managedObjectContext) as! Pin
+            let newPin = Pin(entity: entityDescription!, insertInto: appDelegate!.coreDataStack.managedObjectContext)
             newPin.latitude = coordinate.latitude
             newPin.longitude = coordinate.longitude
             try! appDelegate?.coreDataStack.savecontext()
-            print(mapView.annotations.count)
         }
     }
     @IBAction func editFunction(_ sender: Any) {
@@ -127,19 +127,40 @@ extension ViewController : MKMapViewDelegate{
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        let latitude  = Double((view.annotation?.coordinate.latitude)!)
+        let longitude = Double((view.annotation?.coordinate.longitude)!)
+        let fetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Pin")
+        let predicate = NSPredicate(format: "latitude = %@ AND longitude = %@", argumentArray: [latitude, longitude])
+        let context = appDelegate?.coreDataStack.managedObjectContext
+        fetch.predicate = predicate
         if edit{
             mapView.removeAnnotation(view.annotation!)
+            do{
+                let pin = try appDelegate?.coreDataStack.managedObjectContext.fetch(fetch)
+                if let managedPin = pin as? [Pin], managedPin.count != 0{
+                    context!.delete(managedPin.first!)
+                    try context!.save()
+                }
+            }catch{
+                print("pin delete error")
+            }
+            
         }
         else{
             mapView.deselectAnnotation(view.annotation, animated: true)
-            if let coordinate = view.annotation?.coordinate{
-                
-                print("latitude is \(coordinate.latitude) and longitude is \(coordinate.longitude)")
-                let detail = self.storyboard?.instantiateViewController(withIdentifier: "detail") as! DetailViewController
-                detail.coordinate = coordinate
-                self.navigationController?.pushViewController(detail, animated: true)
-                
-            } 
+            let detail = self.storyboard?.instantiateViewController(withIdentifier: "detail") as! DetailViewController
+            detail.coordinate = view.annotation?.coordinate
+            do{
+                let pin = try appDelegate?.coreDataStack.managedObjectContext.fetch(fetch)
+                if let managedPin = pin as? [Pin], managedPin.count != 0{
+                    detail.pin = managedPin.first
+                }
+            }catch{
+                print("pin delete error")
+            }
+            detail.context = context!
+            self.navigationController?.pushViewController(detail, animated: true)
+            
         }
         
     }
